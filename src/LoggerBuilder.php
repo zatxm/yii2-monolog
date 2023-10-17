@@ -11,7 +11,7 @@ class LoggerBuilder
     {
         $logger = new Logger('app_log');
         $file = Yii::getAlias('@runtime/logs/app.log');
-        $output = "%datetime% %channel%.%level_name% %req% %message% %context% %extra% %trace%\n";
+        $output = "%datetime% %channel%.%level_name% %extra.reqId% %message% %context% %extra% %extra.trace%\n";
         $dateFormatter = 'Y-m-d\TH:i:s.u';
         $formatter = new LineFormatter($output, $dateFormatter, false, true);
         $handler = new StreamHandler($file, Logger::DEBUG, true, 0666);
@@ -34,7 +34,7 @@ class LoggerBuilder
         $logger->pushHandler($handler);
         $uid = static::generateUid();
         $logger->pushProcessor(function ($record) use ($uid, $extractTrace) {
-            $record['req'] = $uid ?: static::generateUid();
+            $record->extra['reqId'] = $uid ?: static::generateUid();
             if ($extractTrace) {
                 $traces = [];
                 $ts = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
@@ -49,7 +49,7 @@ class LoggerBuilder
                         $traces[] = $str;
                     }
                 }
-                $record['trace'] = $traces ? implode("\n", $traces) : '';
+                $record->extra['trace'] = $traces ? implode("\n", $traces) : '';
             }
             return $record;
         });
