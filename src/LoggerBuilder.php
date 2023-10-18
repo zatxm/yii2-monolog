@@ -16,8 +16,8 @@ class LoggerBuilder
         $formatter = new LineFormatter($output, $dateFormatter, false, true);
         $handler = new StreamHandler($file, Logger::DEBUG, true, 0666);
         $handler->setFormatter($formatter)->setCustomClosure(function () use ($file) {
-            $dir = Yii::getAlias('@runtime/logs/backup/' . date('Y-m'));
-            $ztFile = Yii::getAlias('@runtime/logs/backup/' . date('Y-m') . '/app-'. date('Y-m-d', strtotime('-1 day')) . '.log');
+            $dir = Yii::getAlias('@runtime/logs/backup');
+            $ztFile = Yii::getAlias('@runtime/logs/backup/app-'. date('Y-m-d', strtotime('-1 day')) . '.log');
             if (!is_file($ztFile) && is_file($file)) {
                 if (!is_dir($dir)) {
                     $status = mkdir($dir, 0777, true);
